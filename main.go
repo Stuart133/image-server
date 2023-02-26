@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"strconv"
 
@@ -18,18 +19,10 @@ func main() {
 }
 
 func rotate(w http.ResponseWriter, req *http.Request) {
-	// TODO: Document max size
-	err := req.ParseMultipartForm(1 << 31)
+	// Read the multipart form & extract the image file
+	file, err := read_multipart_file(req)
 	if err != nil {
 		writeBadResponse(w, err.Error())
-		return
-	}
-
-	// Read image file
-	file, _, err := req.FormFile("image")
-	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not read uploaded file: %s", err))
-		return
 	}
 	defer file.Close()
 
@@ -57,18 +50,10 @@ func rotate(w http.ResponseWriter, req *http.Request) {
 }
 
 func resize(w http.ResponseWriter, req *http.Request) {
-	// TODO: Document max size
-	err := req.ParseMultipartForm(1 << 31)
+	// Read the multipart form & extract the image file
+	file, err := read_multipart_file(req)
 	if err != nil {
 		writeBadResponse(w, err.Error())
-		return
-	}
-
-	// Read image file
-	file, _, err := req.FormFile("image")
-	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not read uploaded file: %s", err))
-		return
 	}
 	defer file.Close()
 
@@ -98,6 +83,21 @@ func resize(w http.ResponseWriter, req *http.Request) {
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Write(resized)
+}
+
+func read_multipart_file(req *http.Request) (multipart.File, error) {
+	err := req.ParseMultipartForm(1 << 31)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse multipart form: %s", err)
+	}
+
+	// Read image file
+	file, _, err := req.FormFile("image")
+	if err != nil {
+		return nil, fmt.Errorf("could not parse image file from multipart form: %s", err)
+	}
+
+	return file, nil
 }
 
 func writeBadResponse(w http.ResponseWriter, msg string) {
