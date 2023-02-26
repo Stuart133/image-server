@@ -36,7 +36,7 @@ func rotate(w http.ResponseWriter, req *http.Request) {
 	// Read rotation paramter
 	rotation, err := strconv.Atoi(req.FormValue("rotation"))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse output image width: %s", err))
+		writeBadResponse(w, fmt.Sprintf("could not parse rotation: %s", err))
 		return
 	}
 
@@ -48,11 +48,10 @@ func rotate(w http.ResponseWriter, req *http.Request) {
 	// Do the actual resizing
 	rotated, err := image_buffer.Rotate(bimg.Angle(rotation))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse resize image: %s", err))
+		writeBadResponse(w, fmt.Sprintf("could not rotate image: %s", err))
 		return
 	}
 
-	bimg.Write("out.jpg", rotated)
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Write(rotated)
 }
@@ -93,11 +92,10 @@ func resize(w http.ResponseWriter, req *http.Request) {
 	// Do the actual resizing
 	resized, err := image_buffer.Resize(width, height)
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse resize image: %s", err))
+		writeBadResponse(w, fmt.Sprintf("could not resize image: %s", err))
 		return
 	}
 
-	bimg.Write("out.jpg", resized)
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Write(resized)
 }
