@@ -19,17 +19,23 @@ func main() {
 }
 
 func rotate(w http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodPost {
+		writeMethodNotAllowed(w)
+		return
+	}
+
 	// Read the multipart form & extract the image file
 	file, err := read_multipart_file(req)
 	if err != nil {
-		writeBadResponse(w, err.Error())
+		writeBadRequest(w, err.Error())
+		return
 	}
 	defer file.Close()
 
 	// Read rotation paramter
 	rotation, err := strconv.Atoi(req.FormValue("rotation"))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse rotation: %s", err))
+		writeBadRequest(w, fmt.Sprintf("could not parse rotation: %s", err))
 		return
 	}
 
@@ -41,7 +47,7 @@ func rotate(w http.ResponseWriter, req *http.Request) {
 	// Do the actual resizing
 	rotated, err := image_buffer.Rotate(bimg.Angle(rotation))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not rotate image: %s", err))
+		writeBadRequest(w, fmt.Sprintf("could not rotate image: %s", err))
 		return
 	}
 
@@ -50,22 +56,28 @@ func rotate(w http.ResponseWriter, req *http.Request) {
 }
 
 func resize(w http.ResponseWriter, req *http.Request) {
+	if req.Method != http.MethodPost {
+		writeMethodNotAllowed(w)
+		return
+	}
+
 	// Read the multipart form & extract the image file
 	file, err := read_multipart_file(req)
 	if err != nil {
-		writeBadResponse(w, err.Error())
+		writeBadRequest(w, err.Error())
+		return
 	}
 	defer file.Close()
 
 	// Read resize paramters
 	width, err := strconv.Atoi(req.FormValue("width"))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse output image width: %s", err))
+		writeBadRequest(w, fmt.Sprintf("could not parse output image width: %s", err))
 		return
 	}
 	height, err := strconv.Atoi(req.FormValue("height"))
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not parse output image height: %s", err))
+		writeBadRequest(w, fmt.Sprintf("could not parse output image height: %s", err))
 		return
 	}
 
@@ -77,7 +89,7 @@ func resize(w http.ResponseWriter, req *http.Request) {
 	// Do the actual resizing
 	resized, err := image_buffer.Resize(width, height)
 	if err != nil {
-		writeBadResponse(w, fmt.Sprintf("could not resize image: %s", err))
+		writeBadRequest(w, fmt.Sprintf("could not resize image: %s", err))
 		return
 	}
 
@@ -100,7 +112,12 @@ func read_multipart_file(req *http.Request) (multipart.File, error) {
 	return file, nil
 }
 
-func writeBadResponse(w http.ResponseWriter, msg string) {
+func writeBadRequest(w http.ResponseWriter, msg string) {
 	w.WriteHeader(http.StatusBadRequest)
 	w.Write([]byte(msg))
+}
+
+func writeMethodNotAllowed(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	w.Write([]byte("Method not allowed"))
 }
