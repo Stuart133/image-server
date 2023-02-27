@@ -1,4 +1,4 @@
-module image-server
+module github.com/stuart133/image-server
 
 go 1.18
 
