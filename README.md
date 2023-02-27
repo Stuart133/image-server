@@ -2,6 +2,22 @@
 
 A toy image editing server. Support resizing & rotations
 
+## Building image-server
+
+The easiest way to get running with `image-server` is to use the `Dockerfile`. The following commands will build and then run the server via your local docker daemon. All the dependencies are bundled with the image.
+
+```
+docker build -t image-server:1.0 .
+```
+
+You can also run `image-server` using the standard go tooling. In this case ensure the correct build & runtime dependencies are available as documented below
+
+```
+go build main.go -o image-server
+
+./image-server
+```
+
 ## Dependencies
 
 `image-server` uses [libvips](https://github.com/libvips/libvips) to perform image processing functions. To compile and run this project `libvips` will need to be installed on the local machine.

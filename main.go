@@ -9,5 +9,5 @@ import (
 func main() {
 	api.RegisterHandlers()
 
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":80", nil)
 }
