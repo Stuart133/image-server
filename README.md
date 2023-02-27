@@ -8,9 +8,12 @@ The easiest way to get running with `image-server` is to use the `Dockerfile`. T
 
 ```
 docker build -t image-server:1.0 .
+docker run -p 8000:80 image-server:1.0
 ```
 
-You can also run `image-server` using the standard go tooling. In this case ensure the correct build & runtime dependencies are available as documented below
+The server will be made available on port `8000` on your local machine
+
+You can also run `image-server` using the standard go tooling. In this case ensure the correct build & runtime dependencies are available as documented below. `image-server` listens on port 80.
 
 ```
 go build main.go -o image-server

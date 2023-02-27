@@ -1,4 +1,4 @@
-FROM golang:bullseye
+FROM golang:bullseye as build
 
 RUN apt-get update && apt-get install -y libvips-dev
 
@@ -12,6 +12,10 @@ COPY ./ ./
 
 RUN go build -o /image-server
 
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y libvips
+COPY --from=build /image-server /usr/local/bin/image-server
+
 EXPOSE 80
 
-CMD [ "/image-server" ]
+CMD [ "/usr/local/bin/image-server" ]
