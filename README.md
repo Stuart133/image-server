@@ -1,6 +1,22 @@
 # image-server
 
-A toy image editing server. Support resizing & rotations. Uses libvips to perform processing functions
+A toy image editing server. Support resizing & rotations
+
+## Dependencies
+
+`image-server` uses [libvips](https://github.com/libvips/libvips) to perform image processing functions. To compile and run this project `libvips` will need to be installed on the local machine.
+
+For example, before building on ubuntu, you will need to run the following command
+
+```
+sudo apt install libvips-dev
+```
+
+To run the compiled binary only the core library is required. To install this on ubuntu run the following command:
+
+```
+sudo apt install libvips
+```
 
 ## Scaling notes
 
