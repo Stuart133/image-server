@@ -6,14 +6,14 @@ import (
 	"net/http"
 )
 
-func read_multipart_file(req *http.Request) (multipart.File, error) {
+// Parse a multipart form from the request & extract a file
+func readMultipartFile(req *http.Request, filename string) (multipart.File, error) {
 	err := req.ParseMultipartForm(1 << 31)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse multipart form: %s", err)
 	}
 
-	// Read image file
-	file, _, err := req.FormFile("image")
+	file, _, err := req.FormFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse image file from multipart form: %s", err)
 	}

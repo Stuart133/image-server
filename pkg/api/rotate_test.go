@@ -67,7 +67,7 @@ func Test_Rotate(t *testing.T) {
 			// Create image part
 			fw, err := mw.CreateFormFile("image", "balloons.jpg")
 			assert.NilError(t, err)
-			_, err = io.Copy(fw, mustOpen("./data/balloons.jpg"))
+			_, err = io.Copy(fw, mustOpen("../../data/balloons.jpg"))
 			assert.NilError(t, err)
 
 			// Add rotation parameter

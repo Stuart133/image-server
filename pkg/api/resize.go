@@ -1,13 +1,11 @@
 package api
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/h2non/bimg"
+	"github.com/stuart133/image-server/pkg/image"
 )
 
 func resizeHandler(w http.ResponseWriter, req *http.Request) {
@@ -16,15 +14,14 @@ func resizeHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Read the multipart form & extract the image file
-	file, err := read_multipart_file(req)
+	file, err := readMultipartFile(req, "image")
 	if err != nil {
 		writeBadRequest(w, err.Error())
 		return
 	}
 	defer file.Close()
 
-	// Read resize paramters
+	// Parse resize paramters
 	width, err := strconv.Atoi(req.FormValue("width"))
 	if err != nil {
 		writeBadRequest(w, fmt.Sprintf("could not parse output image width: %s", err))
@@ -36,13 +33,7 @@ func resizeHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Read the image file & copy into an image buffer
-	buf := bytes.Buffer{}
-	io.Copy(&buf, file)
-	image_buffer := bimg.NewImage(buf.Bytes())
-
-	// Do the actual resizing
-	resized, err := image_buffer.Resize(width, height)
+	resized, err := image.Resize(file, height, width)
 	if err != nil {
 		writeBadRequest(w, fmt.Sprintf("could not resize image: %s", err))
 		return
